@@ -1,69 +1,115 @@
-get_pi(long long):
-        push    rbp                         ; складываем адрес возврата на стек
-        mov     rbp, rsp                    ; обновляем адрес
-        sub     rsp, 48                     ; выделяем место на стеке
-        mov     QWORD PTR [rbp-40], rdi     ; кладем total на стек
-        mov     QWORD PTR [rbp-8], 0        ; кладем i на стек и ставим = 0
-        mov     QWORD PTR [rbp-16], 0       ; кладем matched на стек и ставим = 0
-.L5:
-        mov     rax, QWORD PTR [rbp-16]     ; кладем i со стека на регистр
-        cmp     rax, QWORD PTR [rbp-40]     ; сравниваем i и total
-        jge     .L2                         ; если i >= total, то цикл кончился, идем на метку конца цикла
-        call    rand                        ; вызываем функцию rand, она кладет 32 битное случайное число (int) в eax
-        cvtsi2sd        xmm0, eax           ; конвертируем int (который вернул rand) в double
-        movsd   xmm1, QWORD PTR .LC0[rip]   ; кладем RAND_MAX в регистр
-        divsd   xmm0, xmm1                  ; делим случайное число (которое получили) на RAND_MAX
-        movsd   QWORD PTR [rbp-24], xmm0    ; сохраняем это число на стек (x)
-        call    rand                        ; повторяем операцию (для y)
-        cvtsi2sd        xmm0, eax           ; повторяем операцию (для y)
-        movsd   xmm1, QWORD PTR .LC0[rip]   ; повторяем операцию (для y)
-        divsd   xmm0, xmm1                  ; повторяем операцию (для y)
-        movsd   QWORD PTR [rbp-32], xmm0    ; повторяем операцию (для y)
-        movsd   xmm0, QWORD PTR [rbp-24]    ; берем x со стека
-        movapd  xmm1, xmm0                  ; копируем между регистрами (для double movapd быстрее)
-        mulsd   xmm1, xmm0                  ; возводим x в квадрат
-        movsd   xmm0, QWORD PTR [rbp-32]    ; берем y со стека
-        mulsd   xmm0, xmm0                  ; возводим y в квадрат
-        addsd   xmm1, xmm0                  ; складываем
-        movsd   xmm0, QWORD PTR .LC1[rip]   ; берем из памяти 1.0
-        comisd  xmm0, xmm1                  ; сравниваем x*x + y*y и 1.0
-        jb      .L3                         ; если > 1.0, пропускаем инкремент matched
-        add     QWORD PTR [rbp-8], 1        ; инкрементируем matched
-.L3:
-        add     QWORD PTR [rbp-16], 1       ; инкрементируем i
-        jmp     .L5                         ; переходим в начало цикла
-.L2:
-        cvtsi2sd xmm1, QWORD PTR [rbp-8]    ; конвертируем matched в double
-        movsd   xmm0, QWORD PTR .LC2[rip]   ; берем из памяти 4.0
-        mulsd   xmm0, xmm1                  ; умножаем
-        cvtsi2sd xmm1, QWORD PTR [rbp-40]   ; конвертируем total в double
-        divsd   xmm0, xmm1                  ; делим
-        leave                               ; возвращаем стек и                 
-        ret                                 ; выходим по адресу возврата
-.LC3:
-        .string "PI = %lf\n"                ; форматная строка
-main:
-        push    rbp                         ; складываем адрес возврата на стек
-        mov     rbp, rsp                    ; обновляем адрес
-        sub     rsp, 16                     ; выделяем место для локальных переменных
-        mov     edi, 90000000               ; складываем аргумент total
-        call    get_pi(long long)           ; вызываем функцию get_pi
-        movq    rax, xmm0                   ; get_pi сложила результат в xmm0, берем его
-        mov     QWORD PTR [rbp-8], rax      ; складываем результат на стек
-        mov     rax, QWORD PTR [rbp-8]      ; ??
-        movq    xmm0, rax                   ; ??
-        mov     edi, OFFSET FLAT:.LC3       ; кладем указатель на форматную строку в edi
-        mov     eax, 1                      ; число аргументов printf
-        call    printf                      ; вызываем printf
-        mov     eax, 0                      ; кладем адрес возврата - 0
-        leave                               ; возвращаем стек и
-        ret                                 ; выходим по адресу возврата
-.LC0:                                       ; RAND_MAX
-        .long   4290772992
-        .long   1105199103
-.LC1:                                       ; 1.0
-        .long   0
-        .long   1072693248
-.LC2:                                       ; 4.0
-        .long   0
-        .long   1074790400
+	.section	__TEXT,__text,regular,pure_instructions
+	.macosx_version_min 10, 13
+	.intel_syntax noprefix
+	.section	__TEXT,__literal8,8byte_literals
+	.p2align	3
+LCPI0_0:
+	.quad	4616189618054758400     ## double 4
+LCPI0_1:
+	.quad	4607182418800017408     ## double 1
+LCPI0_2:
+	.quad	4746794007244308480     ## double 2147483647
+	.section	__TEXT,__text,regular,pure_instructions
+	.globl	_get_pi
+	.p2align	4, 0x90
+_get_pi:                                ## @get_pi
+	.cfi_startproc
+## BB#0:
+	push	rbp
+Lcfi0:
+	.cfi_def_cfa_offset 16
+Lcfi1:
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+Lcfi2:
+	.cfi_def_cfa_register rbp
+	sub	rsp, 48
+	mov	qword ptr [rbp - 8], rdi
+	mov	qword ptr [rbp - 16], 0
+	mov	qword ptr [rbp - 24], 0
+LBB0_1:                                 ## =>This Inner Loop Header: Depth=1
+	mov	rax, qword ptr [rbp - 24]
+	cmp	rax, qword ptr [rbp - 8]
+	jge	LBB0_6
+## BB#2:                                ##   in Loop: Header=BB0_1 Depth=1
+	call	_rand
+	movsd	xmm0, qword ptr [rip + LCPI0_2] ## xmm0 = mem[0],zero
+	movsd	xmm1, qword ptr [rip + LCPI0_1] ## xmm1 = mem[0],zero
+	cvtsi2sd	xmm2, eax
+	mulsd	xmm2, xmm1
+	divsd	xmm2, xmm0
+	movsd	qword ptr [rbp - 32], xmm2
+	call	_rand
+	movsd	xmm0, qword ptr [rip + LCPI0_1] ## xmm0 = mem[0],zero
+	movsd	xmm1, qword ptr [rip + LCPI0_2] ## xmm1 = mem[0],zero
+	cvtsi2sd	xmm2, eax
+	mulsd	xmm2, xmm0
+	divsd	xmm2, xmm1
+	movsd	qword ptr [rbp - 40], xmm2
+	movsd	xmm1, qword ptr [rbp - 32] ## xmm1 = mem[0],zero
+	mulsd	xmm1, qword ptr [rbp - 32]
+	movsd	xmm2, qword ptr [rbp - 40] ## xmm2 = mem[0],zero
+	mulsd	xmm2, qword ptr [rbp - 40]
+	addsd	xmm1, xmm2
+	ucomisd	xmm0, xmm1
+	jb	LBB0_4
+## BB#3:                                ##   in Loop: Header=BB0_1 Depth=1
+	mov	rax, qword ptr [rbp - 16]
+	add	rax, 1
+	mov	qword ptr [rbp - 16], rax
+LBB0_4:                                 ##   in Loop: Header=BB0_1 Depth=1
+	jmp	LBB0_5
+LBB0_5:                                 ##   in Loop: Header=BB0_1 Depth=1
+	mov	rax, qword ptr [rbp - 24]
+	add	rax, 1
+	mov	qword ptr [rbp - 24], rax
+	jmp	LBB0_1
+LBB0_6:
+	movsd	xmm0, qword ptr [rip + LCPI0_0] ## xmm0 = mem[0],zero
+	cvtsi2sd	xmm1, qword ptr [rbp - 16]
+	mulsd	xmm1, xmm0
+	cvtsi2sd	xmm0, qword ptr [rbp - 8]
+	divsd	xmm1, xmm0
+	movaps	xmm0, xmm1
+	add	rsp, 48
+	pop	rbp
+	ret
+	.cfi_endproc
+
+	.globl	_main
+	.p2align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## BB#0:
+	push	rbp
+Lcfi3:
+	.cfi_def_cfa_offset 16
+Lcfi4:
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+Lcfi5:
+	.cfi_def_cfa_register rbp
+	sub	rsp, 32
+	mov	eax, 90000000
+	mov	edi, eax
+	mov	dword ptr [rbp - 4], 0
+	call	_get_pi
+	lea	rdi, [rip + L_.str]
+	movsd	qword ptr [rbp - 16], xmm0
+	movsd	xmm0, qword ptr [rbp - 16] ## xmm0 = mem[0],zero
+	mov	al, 1
+	call	_printf
+	xor	ecx, ecx
+	mov	dword ptr [rbp - 20], eax ## 4-byte Spill
+	mov	eax, ecx
+	add	rsp, 32
+	pop	rbp
+	ret
+	.cfi_endproc
+
+	.section	__TEXT,__cstring,cstring_literals
+L_.str:                                 ## @.str
+	.asciz	"PI = %lf\n"
+
+
+.subsections_via_symbols
