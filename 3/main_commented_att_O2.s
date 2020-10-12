@@ -24,7 +24,7 @@ get_pi(long long):                  ; Инициализация при запу
         mulsd   %xmm0, %xmm0
         addsd   %xmm1, %xmm0
         comisd  %xmm0, %xmm2        ; Сравнение x*x+y*y с 1
-        sbbq    $-1, %rbp
+        sbbq    $-1, %rbp           ; subtract with borrow 
         addq    $1, %rbx            ; Инкремент i
         cmpq    %rbx, %r12          ; Сравниванем i с total
         jne     .L5                 ; Если не равны - цикл не кончился - идем в начало цикла
@@ -50,7 +50,7 @@ main:                               ; Функция main
         movl    $90000000, %edi
         call    get_pi(long long)
         movl    $.LC4, %edi         ; Вызов printf
-        movl    $1, %eax            ;
+        movl    $1, %eax            ; 1 аргумент
         call    printf              ; 
         xorl    %eax, %eax
         addq    $8, %rsp
@@ -64,3 +64,4 @@ main:                               ; Функция main
 .LC3:
         .long   0                   ; 4.0
         .long   1074790400
+; INTEGER передаются через следующий свободный регистр rdi, rsi, rdx, rcx, r8, r9 в именно таком порядке.
