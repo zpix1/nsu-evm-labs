@@ -1,5 +1,5 @@
 get_pi(long long):
-        pushq   %rbp
+        pushq   %rbp                    ; Пролог
         movq    %rsp, %rbp
         subq    $48, %rsp
         movq    %rdi, -40(%rbp)
@@ -8,8 +8,8 @@ get_pi(long long):
 .L5:
         movq    -16(%rbp), %rax
         cmpq    -40(%rbp), %rax
-        jge     .L2
-        call    rand
+        jge     .L2                     ; Проверка условия цикла
+        call    rand                    ; Вычисления
         pxor    %xmm0, %xmm0
         cvtsi2sdl       %eax, %xmm0
         movsd   .LC0(%rip), %xmm1
@@ -30,12 +30,12 @@ get_pi(long long):
         movsd   .LC1(%rip), %xmm0
         comisd  %xmm1, %xmm0
         jb      .L3
-        addq    $1, -8(%rbp)
+        addq    $1, -8(%rbp)            ; инкрементируем matched
 .L3:
-        addq    $1, -16(%rbp)
+        addq    $1, -16(%rbp)           ; инкрементируем i
         jmp     .L5
 .L2:
-        pxor    %xmm1, %xmm1
+        pxor    %xmm1, %xmm1            ; финальные вычисления
         cvtsi2sdq       -8(%rbp), %xmm1
         movsd   .LC2(%rip), %xmm0
         mulsd   %xmm1, %xmm0
@@ -51,13 +51,13 @@ get_pi(long long):
 .LC5:
         .string "Time: %lf sec.\n"
 main:
-        pushq   %rbp
+        pushq   %rbp                    ; Пролог
         movq    %rsp, %rbp
         subq    $48, %rsp
         leaq    -32(%rbp), %rax
         movq    %rax, %rsi
         movl    $4, %edi
-        call    clock_gettime
+        call    clock_gettime           ; Первое измерение времени
         movl    $90000000, %edi
         call    get_pi(long long)
         movq    %xmm0, %rax
@@ -65,12 +65,12 @@ main:
         leaq    -48(%rbp), %rax
         movq    %rax, %rsi
         movl    $4, %edi
-        call    clock_gettime
+        call    clock_gettime           ; Второе измерение
         movq    -8(%rbp), %rax
         movq    %rax, %xmm0
         movl    $.LC3, %edi
         movl    $1, %eax
-        call    printf
+        call    printf                  ; Печать PI
         movq    -48(%rbp), %rax
         movq    -32(%rbp), %rdx
         subq    %rdx, %rax
@@ -88,7 +88,7 @@ main:
         movq    %rax, %xmm0
         movl    $.LC5, %edi
         movl    $1, %eax
-        call    printf
+        call    printf                  ; Печать времени
         movl    $0, %eax
         leave
         ret

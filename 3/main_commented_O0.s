@@ -10,7 +10,7 @@ get_pi(long long):
         cmp     rax, QWORD PTR [rbp-40]     ; сравниваем i и total
         jge     .L2                         ; если i >= total, то цикл кончился, идем на метку конца цикла
         call    rand                        ; вызываем функцию rand, она кладет 32 битное случайное число (int) в eax
-        cvtsi2sd        xmm0, eax           ; конвертируем int (который вернул rand) в double
+        cvtsi2sd        xm m0, eax           ; конвертируем int (который вернул rand) в double
         movsd   xmm1, QWORD PTR .LC0[rip]   ; кладем RAND_MAX в регистр
         divsd   xmm0, xmm1                  ; делим случайное число (которое получили) на RAND_MAX
         movsd   QWORD PTR [rbp-24], xmm0    ; сохраняем это число на стек (x)
