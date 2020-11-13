@@ -1,0 +1,1 @@
+g++ main.cpp libusb-1.0.a -o list.exe
