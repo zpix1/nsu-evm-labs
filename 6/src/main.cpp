@@ -65,6 +65,18 @@ void printdev(libusb_device *dev) {
                 printf("Продукт: %s\n", (char *)string);
         }
 
+        if (desc.idVendor) {
+            r = libusb_get_string_descriptor_ascii(handle, desc.idVendor, string, sizeof(string));
+            if (r > 0)
+                printf("Производитель (another): %s\n", (char *)string);
+        }
+
+        if (desc.idProduct) {
+            r = libusb_get_string_descriptor_ascii(handle, desc.idProduct, string, sizeof(string));
+            if (r > 0)
+                printf("Продукт (another): %s\n", (char *)string);
+        }
+
         if (desc.iSerialNumber) {
             r = libusb_get_string_descriptor_ascii(handle, desc.iSerialNumber, string, sizeof(string));
             if (r > 0)
