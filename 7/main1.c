@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 
-const int N = 2048;
+const int N = 4;
 const int M = 10;
 
 void print_matrix(float* m) {

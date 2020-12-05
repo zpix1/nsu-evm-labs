@@ -81,9 +81,10 @@ void inverse(float* A) {
     memcpy(temp, R, sizeof(float)*N*N);
     for (int iter = 0; iter < M; iter++) {
         printf("Iteration %d\n", iter);
-        for (int i = 0; i < N*N; i++) {
-            I[i] += temp[i];
-        }
+        cblas_saxpy(N*N, 1.0, temp, 1, I, 1);
+        // for (int i = 0; i < N*N; i++) {
+        //     I[i] += temp[i];
+        // }
         memset(A, 0, sizeof(float)*N*N);
         mul(temp, R, A);
         memcpy(temp, A, sizeof(float)*N*N);

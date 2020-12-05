@@ -49,10 +49,17 @@ void print_matrix(float* m) {
 
 // result should be zero
 void mul(float* m1, float* m2, float* result) {
+    __m128 xx, yy, zz;
     for (int i = 0; i < N; i++) {
         for (int k = 0; k < N; k++) {
             for (int j = 0; j < N; j+=4) {
-                vscaleadd(&m2[k*N + j], m1[i*N + k], &result[i*N + j]);
+                
+    xx = _mm_load_ps(&m2[k*N + j]);
+    yy = _mm_set1_ps(m1[i*N + k]);
+    zz = _mm_load_ps(&result[i*N + j]);
+    _mm_store_ps(&result[i*N + j], _mm_add_ps(zz, _mm_mul_ps(xx, yy)));
+
+                // vscaleadd(&m2[k*N + j], m1[i*N + k], &result[i*N + j]);
                 // result[i*N + j] += m1[i*N + k] * m2[k*N + j];
             }
         }
