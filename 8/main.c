@@ -4,12 +4,7 @@
 
 const long long Nmin = 1024 / sizeof(int);
 const long long Nmax = 32 * 1024 * 1024LL / sizeof(int);
-const int K = 100;
-
-// struct timespec start, end;
-// clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-// clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-// printf("Time: %lf sec.\n", end.tv_sec-start.tv_sec + 0.000000001*(end.tv_nsec-start.tv_nsec));
+const int K = 1000;
 
 void gen_ascending(int* data, const long long N) {
     for (long long i = 0; i < N - 1; i++) {
@@ -52,16 +47,16 @@ void test(int* data, const long long N, const int K, void (*gen)(int* data, cons
     for (k = 0, i = 0; i < N; i++) {
         k = data[k];
     }
-
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    
+    unsigned long long start = __builtin_ia32_rdtsc();
 
     for (k = 0, i = 0; i < N*K; i++) {
         k = data[k];
     }
 
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    printf("%lld, %lld, %lf],\n", N*4, K, end.tv_sec-start.tv_sec + 0.000000001*(end.tv_nsec-start.tv_nsec));
+    unsigned long long end = __builtin_ia32_rdtsc();
+    
+    printf("%lld, %d, %llu],\n", N*4, K, (end-start) / N / K);
 }
 
 int main() {

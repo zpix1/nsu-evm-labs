@@ -18,7 +18,7 @@ get_pi(long long):                  ; Пролог
         sub     r4, fp, #76         
         ldmia   r4, {r3-r4}         ; Загружаем total со стека
         cmp     r1, r3              ; Сравниваем старшие 2 байта
-        sbcs    r3, r2, r4          ; Вычитаем младшие 2 байта, ставим флаги
+        sbcs    r3, r2, r4          ; Вычитаем младшие 2 байта, ставим флаги; Subtract with carry, setting the condition flags.
         bge     .L2                 ; Выходим если i >= total
         bl      rand                ; r0 = rand
         mov     r3, r0

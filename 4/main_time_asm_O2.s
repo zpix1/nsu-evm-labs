@@ -4,9 +4,9 @@ get_pi(long long):              ; Пролог
         mov     r4, r1
         sub     sp, sp, #20
         cmp     r0, #1
-        stm     sp, {r3-r4}
+        stm     sp, {r3-r4}     
         sbcs    r3, r1, #0      
-        blt     .L6             ; ..
+        blt     .L6             ; если total - 1 < 0
         mov     r4, #0          ; matched = 0, i = 0
         mov     r5, #0          ; Оптимизация - сразу 2 переменные обнуляются за 1 раз
         ldr     r8, .L11        ; Загрузка RAND_MAX
